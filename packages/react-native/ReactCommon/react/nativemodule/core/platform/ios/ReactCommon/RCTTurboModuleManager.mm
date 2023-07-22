@@ -33,12 +33,6 @@
 using namespace facebook;
 using namespace facebook::react;
 
-static TurboModuleBindingMode sTurboModuleBindingMode = TurboModuleBindingMode::HostObject;
-void RCTTurboModuleSetBindingMode(TurboModuleBindingMode bindingMode)
-{
-  sTurboModuleBindingMode = bindingMode;
-}
-
 /**
  * A global variable whose address we use to associate method queues to id<RCTBridgeModule> objects.
  */
@@ -252,11 +246,11 @@ static Class getFallbackClassFromName(const char *name)
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeWillInvalidateModules:)
                                                  name:RCTBridgeWillInvalidateModulesNotification
-                                               object:_bridge.parentBridge];
+                                               object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeDidInvalidateModules:)
                                                  name:RCTBridgeDidInvalidateModulesNotification
-                                               object:_bridge.parentBridge];
+                                               object:nil];
   }
   return self;
 }
@@ -962,10 +956,9 @@ static Class getFallbackClassFromName(const char *name)
       return turboModule;
     };
 
-    TurboModuleBinding::install(
-        runtime, sTurboModuleBindingMode, std::move(turboModuleProvider), std::move(legacyModuleProvider));
+    TurboModuleBinding::install(runtime, std::move(turboModuleProvider), std::move(legacyModuleProvider));
   } else {
-    TurboModuleBinding::install(runtime, sTurboModuleBindingMode, std::move(turboModuleProvider));
+    TurboModuleBinding::install(runtime, std::move(turboModuleProvider));
   }
 }
 
